@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
-# Custom user manager for creating user
+
 class UserManager(BaseUserManager):
     def create_user(self, name, phone_number, password=None, email=None):
         if not phone_number:
@@ -22,7 +22,7 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-# Custom user model
+
 class User(AbstractBaseUser):
     name = models.CharField(max_length=255)
     email = models.EmailField(max_length=255, null=True, blank=True)
@@ -37,15 +37,18 @@ class User(AbstractBaseUser):
     def __str__(self):
         return self.phone_number
 
-# Spam model
+
 class Spam(models.Model):
-    number = models.CharField(max_length=15, unique=True)
-    count = models.IntegerField(default=1)
+    number = models.CharField(max_length=10)
+    count = models.IntegerField()
+    reported_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='spam_reports')
+    timestamp = models.DateTimeField()  # This field stores when the report was made
+
 
     def __str__(self):
         return self.number
 
-# Contacts model
+
 class Contacts(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
